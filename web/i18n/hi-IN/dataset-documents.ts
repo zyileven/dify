@@ -32,6 +32,7 @@ const translation = {
       resume: 'रिज़्यूमे',
       pause: 'रोकें',
       download: 'फ़ाइल डाउनलोड करें',
+      exportChunks: 'निष्पादन खंड डेटा',
     },
     index: {
       enable: 'सक्रिय करें',

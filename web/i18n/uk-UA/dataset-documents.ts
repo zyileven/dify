@@ -31,6 +31,7 @@ const translation = {
       pause: 'Пауза',
       resume: 'Продовжити',
       download: 'Завантажити файл',
+      exportChunks: 'Експорт даних частинами',
     },
     index: {
       enable: 'Активувати',

@@ -9,6 +9,8 @@ import {
   RiDeleteBinLine,
   RiEditLine,
   RiEqualizer2Line,
+  RiExportLine,
+  RiLoader4Line,
   RiLoopLeftLine,
   RiMoreFill,
   RiPauseCircleLine,
@@ -43,7 +45,7 @@ import { useDatasetDetailContextWithSelector as useDatasetDetailContext } from '
 import type { Props as PaginationProps } from '@/app/components/base/pagination'
 import Pagination from '@/app/components/base/pagination'
 import Checkbox from '@/app/components/base/checkbox'
-import { useDocumentArchive, useDocumentDelete, useDocumentDisable, useDocumentEnable, useDocumentPause, useDocumentResume, useDocumentUnArchive, useSyncDocument, useSyncWebsite } from '@/service/knowledge/use-document'
+import { useDocumentArchive, useDocumentDelete, useDocumentDisable, useDocumentEnable, useDocumentPause, useDocumentResume, useDocumentUnArchive, useExportChunks, useSyncDocument, useSyncWebsite } from '@/service/knowledge/use-document'
 import { extensionToFileType } from '@/app/components/datasets/hit-testing/utils/extension-to-file-type'
 import useBatchEditDocumentMetadata from '../metadata/hooks/use-batch-edit-document-metadata'
 import EditMetadataBatchModal from '@/app/components/datasets/metadata/edit-metadata-batch/modal'
@@ -168,7 +170,7 @@ export const StatusItem: FC<{
   </div>
 }
 
-type OperationName = 'delete' | 'archive' | 'enable' | 'disable' | 'sync' | 'un_archive' | 'pause' | 'resume'
+type OperationName = 'delete' | 'archive' | 'enable' | 'disable' | 'sync' | 'un_archive' | 'pause' | 'resume' | 'export_chunks'
 
 // operation action for list and detail
 export const OperationAction: FC<{
@@ -190,6 +192,7 @@ export const OperationAction: FC<{
   const { id, enabled = false, archived = false, data_source_type, display_status } = detail || {}
   const [showModal, setShowModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const { notify } = useContext(ToastContext)
   const { t } = useTranslation()
   const router = useRouter()
@@ -202,6 +205,7 @@ export const OperationAction: FC<{
   const { mutateAsync: syncWebsite } = useSyncWebsite()
   const { mutateAsync: pauseDocument } = useDocumentPause()
   const { mutateAsync: resumeDocument } = useDocumentResume()
+  const { mutateAsync: exportChunks } = useExportChunks()
   const isListScene = scene === 'list'
 
   const onOperate = async (operationName: OperationName) => {
@@ -231,6 +235,10 @@ export const OperationAction: FC<{
       case 'resume':
         opApi = resumeDocument
         break
+      case 'export_chunks':
+        opApi = exportChunks
+        setExporting(true)
+        break
       default:
         opApi = deleteDocument
         setDeleting(true)
@@ -244,6 +252,8 @@ export const OperationAction: FC<{
     else { notify({ type: 'error', message: t('common.actionMsg.modifiedUnsuccessfully') }) }
     if (operationName === 'delete')
       setDeleting(false)
+    if (operationName === 'export_chunks')
+      setExporting(false)
   }
 
   const { run: handleSwitch } = useDebounceFn((operationName: OperationName) => {
@@ -342,6 +352,18 @@ export const OperationAction: FC<{
                 <div className={s.actionItem} onClick={() => onOperate('resume')}>
                   <RiPlayCircleLine className='h-4 w-4 text-text-tertiary' />
                   <span className={s.actionName}>{t('datasetDocuments.list.action.resume')}</span>
+                </div>
+              )}
+              {!archived && (
+                <div className={s.actionItem} onClick={() => !exporting && onOperate('export_chunks')}>
+                  {
+                    exporting ? (
+                      <RiLoader4Line className='h-4 w-4 animate-spin text-text-tertiary' />
+                    ) : (
+                      <RiExportLine className='h-4 w-4 text-text-tertiary' />
+                    )
+                  }
+                  <span className={cn(s.actionName, exporting ? 'cursor-not-allowed text-text-disabled' : '')}>{t('datasetDocuments.list.action.exportChunks')}</span>
                 </div>
               )}
               {!archived && <div className={s.actionItem} onClick={() => onOperate('archive')}>

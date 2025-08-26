@@ -33,6 +33,7 @@ const translation = {
       pause: '一時停止',
       resume: '再開',
       download: 'ファイルをダウンロード',
+      exportChunks: 'データをエクスポートする',
     },
     index: {
       enable: '有効にする',

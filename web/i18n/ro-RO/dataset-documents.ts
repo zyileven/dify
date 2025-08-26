@@ -31,6 +31,7 @@ const translation = {
       pause: 'Pauză',
       resume: 'Reia',
       download: 'Descărcați fișierul',
+      exportChunks: 'Exportați datele din bucăți',
     },
     index: {
       enable: 'Activează',

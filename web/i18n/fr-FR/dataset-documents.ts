@@ -31,6 +31,7 @@ const translation = {
       pause: 'Pause',
       resume: 'Reprendre',
       download: 'Télécharger le fichier',
+      exportChunks: 'Exporter les données des morceaux',
     },
     index: {
       enable: 'Activer',

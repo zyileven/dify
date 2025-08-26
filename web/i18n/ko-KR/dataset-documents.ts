@@ -31,6 +31,7 @@ const translation = {
       resume: '재개',
       pause: '일시 중지',
       download: '파일 다운로드',
+      exportChunks: '청크 데이터 내보내기',
     },
     index: {
       enable: '활성화',

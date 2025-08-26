@@ -32,6 +32,7 @@ const translation = {
       resume: 'ادامه',
       pause: 'مکث',
       download: 'دانلود فایل',
+      exportChunks: 'صادرات داده‌های چانک',
     },
     index: {
       enable: 'فعال کردن',

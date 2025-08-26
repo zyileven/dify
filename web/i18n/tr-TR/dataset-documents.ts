@@ -32,6 +32,7 @@ const translation = {
       pause: 'Duraklat',
       resume: 'Devam Et',
       download: 'Dosyayı İndir',
+      exportChunks: 'Parça verilerini dışa aktar',
     },
     index: {
       enable: 'Etkinleştir',

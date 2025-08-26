@@ -33,6 +33,7 @@ const translation = {
       pause: '暂停',
       resume: '恢复',
       download: '下载文件',
+      exportChunks: '导出区块数据',
     },
     index: {
       enable: '启用中',

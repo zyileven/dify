@@ -31,6 +31,7 @@ const translation = {
       resume: 'Wznów',
       pause: 'Pauza',
       download: 'Pobierz plik',
+      exportChunks: 'Eksportuj dane z fragmentów',
     },
     index: {
       enable: 'Włącz',

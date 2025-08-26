@@ -31,6 +31,7 @@ const translation = {
       pause: 'Tạm dừng',
       resume: 'Tiếp tục',
       download: 'Tải xuống tập tin',
+      exportChunks: 'Xuất dữ liệu các khối',
     },
     index: {
       enable: 'Kích hoạt',

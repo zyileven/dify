@@ -32,6 +32,7 @@ const translation = {
       pause: 'หยุด',
       resume: 'ดำเนิน',
       download: 'ดาวน์โหลดไฟล์',
+      exportChunks: 'ส่งออกข้อมูลชิ้นส่วน',
     },
     index: {
       enable: 'เปิด',

@@ -32,6 +32,7 @@ const translation = {
       pause: 'Zaustavi',
       resume: 'Nadaljuj',
       download: 'Prenesi datoteko',
+      exportChunks: 'Izvozi podatke v kosih',
     },
     index: {
       enable: 'Omogoči',

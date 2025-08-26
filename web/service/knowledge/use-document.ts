@@ -5,12 +5,28 @@ import {
 import { del, get, patch } from '../base'
 import { useInvalid } from '../use-base'
 import type { MetadataType, SortType } from '../datasets'
-import { pauseDocIndexing, resumeDocIndexing } from '../datasets'
+import { exportAllChunks, pauseDocIndexing, resumeDocIndexing } from '../datasets'
 import type { DocumentDetailResponse, DocumentListResponse, UpdateDocumentBatchParams } from '@/models/datasets'
 import { DocumentActionType } from '@/models/datasets'
 import type { CommonResponse } from '@/models/common'
+import { downloadFile } from '@/utils/format'
 
 const NAME_SPACE = 'knowledge/document'
+
+const formatChunksHeader = (position: number, wordCount: number): string => {
+  const divider = '─'.repeat(50)
+  return `\n${divider}\n分段 ${position} | 字符数: ${wordCount}\n${divider}\n`
+}
+
+const formatChunksContent = (chunk: { position: number; word_count: number; content: string }): string => {
+  return `${formatChunksHeader(chunk.position, chunk.word_count)}${chunk.content}\n`
+}
+
+const generateFileName = (documentName: string): string => {
+  const baseName = documentName.replace(/\.[^/.]+$/, '') || 'chunks'
+  const timestamp = new Date().toISOString().split('T')[0]
+  return `${baseName}_chunks_${timestamp}.txt`
+}
 
 export const useDocumentListKey = [NAME_SPACE, 'documentList']
 export const useDocumentList = (payload: {
@@ -148,6 +164,28 @@ export const useDocumentResume = () => {
       if (!datasetId || !documentId)
         throw new Error('datasetId and documentId are required')
       return resumeDocIndexing({ datasetId, documentId }) as Promise<CommonResponse>
+    },
+  })
+}
+
+export const useExportChunks = () => {
+  return useMutation({
+    mutationFn: async ({ datasetId, documentId }: UpdateDocumentBatchParams) => {
+      if (!datasetId || !documentId)
+        throw new Error('datasetId and documentId are required')
+      try {
+        const allChunks = await exportAllChunks({ datasetId, documentId })
+        const documentDetail = await get<DocumentDetailResponse>(`/datasets/${datasetId}/documents/${documentId}`, { params: { metadata: 'without' } })
+        const formatChunks = allChunks.map((chunk) => {
+          return formatChunksContent(chunk)
+        })
+        downloadFile({ data: new Blob([formatChunks.join('')], { type: 'text/plain' }), fileName: generateFileName(documentDetail.name) })
+        return { success: true, count: allChunks.length }
+      }
+      catch (error) {
+        console.error('Export chunks failed:', error)
+        throw error
+      }
     },
   })
 }

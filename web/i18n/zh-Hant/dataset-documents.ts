@@ -31,6 +31,7 @@ const translation = {
       resume: '恢復',
       pause: '暫停',
       download: '下載檔案',
+      exportChunks: '匯出資料區塊',
     },
     index: {
       enable: '啟用中',

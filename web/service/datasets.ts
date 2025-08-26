@@ -22,6 +22,8 @@ import type {
   IndexingStatusResponse,
   ProcessRuleResponse,
   RelatedAppResponse,
+  SegmentDetailModel,
+  SegmentsResponse,
   createDocumentResponse,
 } from '@/models/datasets'
 import type { CreateKnowledgeBaseReq } from '@/app/components/datasets/external-knowledge-base/create/declarations'
@@ -156,6 +158,47 @@ export const pauseDocIndexing: Fetcher<CommonResponse, CommonDocReq> = ({ datase
 
 export const resumeDocIndexing: Fetcher<CommonResponse, CommonDocReq> = ({ datasetId, documentId }) => {
   return patch<CommonResponse>(`/datasets/${datasetId}/documents/${documentId}/processing/resume`)
+}
+
+// Export segments with pagination
+export const exportChunks: Fetcher<SegmentsResponse, CommonDocReq & { params: { page: number; limit: number; keyword?: string; enabled?: 'all' | boolean | '' } }> = ({ datasetId, documentId, params }) => {
+  return get<SegmentsResponse>(`/datasets/${datasetId}/documents/${documentId}/segments`, {
+    params: {
+      page: params.page,
+      limit: params.limit,
+      keyword: params.keyword || '',
+      enabled: params.enabled || 'all',
+    },
+  })
+}
+
+// Export all segments by recursively fetching all pages
+export const exportAllChunks = async ({ datasetId, documentId, limit = 100 }: CommonDocReq & { limit?: number }): Promise<SegmentDetailModel[]> => {
+  const allSegments: SegmentDetailModel[] = []
+  let currentPage = 1
+  let hasMore = true
+
+  while (hasMore) {
+    const response = await exportChunks({
+      datasetId,
+      documentId,
+      params: {
+        page: currentPage,
+        limit,
+        keyword: '',
+        enabled: 'all',
+      },
+    })
+
+    // Add the fetched segments to the collection
+    allSegments.push(...response.data)
+
+    // Check if there are more pages
+    hasMore = response.total > allSegments.length
+    currentPage++
+  }
+
+  return allSegments
 }
 
 export const preImportNotionPages: Fetcher<{ notion_info: DataSourceNotionWorkspace[] }, { url: string; datasetId?: string }> = ({ url, datasetId }) => {
